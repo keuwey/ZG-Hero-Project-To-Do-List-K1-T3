@@ -138,6 +138,14 @@ public class ToDoList {
                 .forEach(System.out::println);
     }
 
+    public static List<Tarefa> listarPorNome(List<Tarefa> listaDeTarefas, boolean crescente) {
+        listaDeTarefas.sort(Comparator.comparing(Tarefa::getNome));
+        if (!crescente) {
+            listaDeTarefas.sort(Comparator.comparing(Tarefa::getNome).reversed());
+        }
+        return listaDeTarefas;
+    }
+
     public static void main(String[] args) throws IOException {
 
         ToDoList toDoList = new ToDoList();
@@ -165,6 +173,7 @@ public class ToDoList {
         toDoList.listarPorPrioridadeDecrescente();
 
         System.out.println();
+        System.out.println(listarPorNome(listaDeTarefas, true));
 
         salvarTarefasEmArquivo(listaDeTarefas, caminhoArquivo);
         toDoList.listarTodasTarefas();
