@@ -1,8 +1,77 @@
+import java.io.*;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ToDoList {
-    List<Tarefa> listaDeTarefas = new ArrayList<>();
+    static String caminhoArquivo = "tarefas.txt";
+    static List<Tarefa> listaDeTarefas = carregarTarefasDeArquivo(caminhoArquivo);
+
+    public static void salvarTarefasEmArquivo(List<Tarefa> listaDeTarefas, String caminhoArquivo) throws IOException {
+        Set<String> tarefasExistentes = new HashSet<>();
+        File arquivo = new File(caminhoArquivo);
+        if (arquivo.exists()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(caminhoArquivo))) {
+                String linha;
+                while ((linha = reader.readLine()) != null) {
+                    tarefasExistentes.add(linha);
+                }
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+        List<String> novasTarefas = listaDeTarefas.stream()
+                .map(ToDoList::tarefaParaLinha)
+                .filter(linha -> !tarefasExistentes.contains(linha))
+                .collect(Collectors.toList());
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(caminhoArquivo, true))) {
+            for (String linha : novasTarefas) {
+                writer.write(linha);
+                writer.newLine();
+            }
+        }
+        System.out.println("Tarefas salvas com sucesso no arquivo!");
+    }
+
+    private static String tarefaParaLinha(Tarefa tarefa) {
+        return String.join(";",
+                String.valueOf(tarefa.getID()),
+                tarefa.getNome(),
+                tarefa.getDescricao(),
+                tarefa.getCategoria(),
+                tarefa.getStatus(),
+                tarefa.getDataDeTermino().toString(),
+                String.valueOf(tarefa.getNivelDePrioridade())
+        );
+    }
+
+    public static List<Tarefa> carregarTarefasDeArquivo(String caminhoArquivo) {
+        List<Tarefa> listaDeTarefas = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(caminhoArquivo))) {
+            String linha;
+            while ((linha = reader.readLine()) != null) {
+                Tarefa tarefa = linhaParaTarefa(linha);
+                listaDeTarefas.add(tarefa);
+            }
+            System.out.println("Tarefas carregadas com sucesso!");
+        } catch (IOException e) {
+            System.err.println("Erro ao carregar as tarefas: " + e.getMessage());
+        }
+        return listaDeTarefas;
+    }
+
+    private static Tarefa linhaParaTarefa(String linha) {
+        String[] campos = linha.split(";");
+        return new Tarefa(
+                campos[1], // Nome
+                campos[2], // Descrição
+                campos[3], // Categoria
+                campos[4], // Status
+                LocalDate.parse(campos[5]), // Data de término
+                Integer.parseInt(campos[6]), // Prioridade
+                Integer.parseInt(campos[0]) // ID
+        );
+    }
 
     public void adicionarTarefa(Tarefa tarefa) {
         listaDeTarefas.add(tarefa);
@@ -69,7 +138,7 @@ public class ToDoList {
                 .forEach(System.out::println);
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         ToDoList toDoList = new ToDoList();
 
@@ -97,6 +166,8 @@ public class ToDoList {
 
         System.out.println();
 
+        salvarTarefasEmArquivo(listaDeTarefas, caminhoArquivo);
         toDoList.listarTodasTarefas();
     }
+
 }
