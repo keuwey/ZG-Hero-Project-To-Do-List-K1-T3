@@ -33,7 +33,9 @@ public class Tarefa {
         if (nome != null && !nome.isEmpty()) {
             Nome = nome;
         }
-        System.out.println("O nome não pode ser vazio");
+        else {
+            System.out.println("O nome não pode ser vazio");
+        }
     }
 
     public String getDescricao() {
@@ -44,7 +46,9 @@ public class Tarefa {
         if (descricao != null && !descricao.isEmpty()) {
             Descricao = descricao;
         }
-        System.out.println("A descrição não pode ser vazia");
+        else {
+            System.out.println("A descrição não pode ser vazia");
+        }
     }
 
     public String getCategoria() {
@@ -55,7 +59,9 @@ public class Tarefa {
         if (categoria != null && !categoria.isEmpty()) {
             Categoria = categoria;
         }
-        System.out.println("A categoria não pode ser vazia");
+        else {
+            System.out.println("A categoria não pode ser vazia");
+        }
 
     }
 
@@ -67,7 +73,9 @@ public class Tarefa {
         if (status != null && !status.isEmpty()) {
             Status = status;
         }
-        System.out.println("O status não pode ficar vazio");
+        else {
+            System.out.println("O status não pode ficar vazio");
+        }
     }
 
     public LocalDate getDataDeTermino() {
@@ -78,6 +86,8 @@ public class Tarefa {
         if (dataDeTermino.isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("A data de conclusão não pode estar no passado!");
         }
+        DataDeTermino = dataDeTermino;
+        System.out.println("Data de término atualizada para: " + dataDeTermino);
     }
 
     public int getNivelDePrioridade() {
