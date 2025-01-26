@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class ToDoList {
+
     static String caminhoArquivo = "tarefas.txt";
     static List<Tarefa> listaDeTarefas = carregarTarefasDeArquivo(caminhoArquivo);
 
@@ -73,8 +74,32 @@ public class ToDoList {
         );
     }
 
-    public void adicionarTarefa(Tarefa tarefa) {
-        listaDeTarefas.add(tarefa);
+    public static void adicionarTarefa(Scanner scanner) {
+        System.out.print("Digite o nome da tarefa: ");
+        String nome = scanner.nextLine();
+
+        System.out.print("Digite a descrição da tarefa: ");
+        String descricao = scanner.nextLine();
+
+        System.out.print("Digite a categoria da tarefa: ");
+        String categoria = scanner.nextLine();
+
+        System.out.print("Digite o status da tarefa (To Do, Doing, Done): ");
+        String status = scanner.nextLine();
+
+        System.out.print("Digite a data de término (formato: AAAA-MM-DD): ");
+        LocalDate dataDeTermino = LocalDate.parse(scanner.nextLine());
+
+        System.out.print("Digite o nível de prioridade (1 a 5): ");
+        int nivelDePrioridade = scanner.nextInt();
+
+        System.out.print("Digite o ID da tarefa: ");
+        int id = scanner.nextInt();
+        scanner.nextLine();
+
+        Tarefa novaTarefa = new Tarefa(nome, descricao, categoria, status, dataDeTermino, nivelDePrioridade, id);
+        listaDeTarefas.add(novaTarefa);
+        System.out.println("Tarefa cadastrada com sucesso!");
     }
 
     public boolean removerTarefaPorId(int id) {
@@ -91,14 +116,16 @@ public class ToDoList {
         return false;
     }
 
-    public void listarPorCategoria(String categoria) {
+    public static void listarPorCategoria(Scanner scanner) {
+        System.out.print("Digite a categoria desejada: ");
+        String categoria = scanner.nextLine();
         System.out.println("Tarefas na categoria '" + categoria + "':");
         listaDeTarefas.stream()
                 .filter(tarefa -> tarefa.getCategoria().equalsIgnoreCase(categoria))
                 .forEach(System.out::println);
     }
 
-    public void listarPorStatus(String status) {
+    public static void listarPorStatus(String status) {
         System.out.println("Tarefas com status '" + status + "':");
         listaDeTarefas.stream()
                 .filter(tarefa -> tarefa.getStatus().equalsIgnoreCase(status))
@@ -106,32 +133,31 @@ public class ToDoList {
     }
 
     // Lista todas as tarefas com que tenha a prioridade passada no parâmetro
-    // Prioridade 1 - 3 (1 == baixa prioridade. 2 == prioridade regular. 3 == alta prioridade)
-    public void listarPorPrioridade(int prioridade) {
+    // Prioridade 1 - 5 (1 == baixa prioridade. 5 == alta prioridade)
+    public static void listarPorPrioridade(int prioridade) {
         System.out.println("Tarefas com prioridade " + prioridade + ":");
         listaDeTarefas.stream()
                 .filter(tarefa -> tarefa.getNivelDePrioridade() == prioridade)
                 .forEach(System.out::println);
     }
 
-    public void listarTodasTarefas() {
+    public static void listarTodasTarefas() {
         System.out.println("Tarefas na lista:");
         listaDeTarefas.forEach(System.out::println);
     }
 
-    public void listarPorPrioridadeCrescente() {
-        Collections.sort(listaDeTarefas, Comparator.comparingInt(Tarefa::getNivelDePrioridade));
-        System.out.println("Tarefas por prioridade (crescente):");
-        listarTodasTarefas();
-    }
-
-    public void listarPorPrioridadeDecrescente() {
+    public static void listarPorPrioridadeDecrescente() {
         Collections.sort(listaDeTarefas, Comparator.comparingInt(Tarefa::getNivelDePrioridade).reversed());
         System.out.println("Tarefas por prioridade (decrescente):");
         listarTodasTarefas();
     }
 
-    public void listarPorData(LocalDate data) {
+    public static List<Tarefa> listarPorPrioridadeTotal(List<Tarefa> listaDeTarefas){
+        listaDeTarefas.sort(Comparator.comparingInt(Tarefa::getNivelDePrioridade).reversed());
+        return listaDeTarefas;
+    }
+
+    public static void listarPorData(LocalDate data) {
         System.out.println("Tarefas com data de término " + data + ":");
         listaDeTarefas.stream()
                 .filter(tarefa -> tarefa.getDataDeTermino().isEqual(data))
@@ -147,36 +173,63 @@ public class ToDoList {
     }
 
     public static void main(String[] args) throws IOException {
+        Scanner scanner = new Scanner(System.in);
+        boolean continuar = true;
 
-        ToDoList toDoList = new ToDoList();
+        while (continuar) {
+            System.out.println("\n--- Menu ToDoList ---\n");
+            System.out.println("1. Cadastrar tarefa");
+            System.out.println("2. Listar todas as tarefas");
+            System.out.println("3. Listar tarefas por nome (crescente)");
+            System.out.println("4. Listar tarefas por nome (decrescente)");
+            System.out.println("5. Listar tarefas por status");
+            System.out.println("6. Listar tarefas por categoria");
+            System.out.println("7. Listar tarefas por prioridade (Todas as tarefas com a prioridade indicada)");
+            System.out.println("8. Listar por prioridade (Ordem de prioridade)");
+            System.out.println("9. Sair");
+            System.out.print("Escolha uma opção: ");
+            int opcao = scanner.nextInt();
+            scanner.nextLine();
 
-        Tarefa tarefa1 = new Tarefa("Comprar frutas", "Comprar banana, maçã, uva, pêra, abacaxi e mamão no supermercado", "Compras", "To Do", LocalDate.of(2025, 1, 27), 1, 1);
-        tarefa1.setNome("Fugir daqui");
-
-        Tarefa tarefa2 = new Tarefa("Estudar java", "Estudar mais sobre threads em java", "Estudos", "Doing", LocalDate.of(2025, 1, 31), 3, 2);
-
-        Tarefa tarefa3 = new Tarefa("Estudar matemática", "Estudar funções, cálculo, integral etc", "Estudos", "To Do", LocalDate.of(2025, 5, 1), 3, 3);
-
-        toDoList.adicionarTarefa(tarefa1);
-        toDoList.adicionarTarefa(tarefa2);
-        toDoList.adicionarTarefa(tarefa3);
-
-        toDoList.listarPorCategoria("Compras");
-        System.out.println();
-        toDoList.listarPorStatus("Doing");
-        System.out.println();
-        toDoList.listarPorPrioridade(3);
-        toDoList.listarPorData(LocalDate.of(2025, 1, 31));
-        System.out.println();
-
-        toDoList.listarPorPrioridadeCrescente();
-        toDoList.listarPorPrioridadeDecrescente();
-
-        System.out.println();
-        System.out.println(listarPorNome(listaDeTarefas, true));
-
+            switch (opcao) {
+                case 1 -> adicionarTarefa(scanner);
+                case 2 -> listarTodasTarefas();
+                case 3 -> {
+                    listarPorNome(listaDeTarefas, true);
+                    for (Tarefa tarefa : listaDeTarefas) {
+                        System.out.println(tarefa);
+                    }
+                }
+                case 4 -> {
+                    listarPorNome(listaDeTarefas, false);
+                    for (Tarefa tarefa : listaDeTarefas) {
+                        System.out.println(tarefa);
+                    }
+                }
+                case 5 -> {
+                    System.out.print("Digite o status que deseja buscar (To Do, Doing, Done): ");
+                    listarPorStatus(scanner.nextLine());
+                }
+                case 6 -> listarPorCategoria(scanner);
+                case 7 -> {
+                    System.out.print("Digite o nível de prioridade (1 a 5): ");
+                    listarPorPrioridade(scanner.nextInt());
+                }
+                case 8 -> {
+                    System.out.println("Tarefas em ordem de prioridade: ");
+                    listarPorPrioridadeTotal(listaDeTarefas);
+                    for (Tarefa tarefa : listaDeTarefas) {
+                        System.out.println(tarefa);
+                    }
+                }
+                case 9 -> {
+                    continuar = false;
+                    System.out.println("Saindo do programa...");
+                }
+                default -> System.out.println("Opção inválida! Tente novamente.");
+            }
+        }
+        scanner.close();
         salvarTarefasEmArquivo(listaDeTarefas, caminhoArquivo);
-        toDoList.listarTodasTarefas();
     }
-
 }

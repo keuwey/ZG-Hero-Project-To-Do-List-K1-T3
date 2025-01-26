@@ -1,3 +1,0 @@
-2;Estudar java;Estudar mais sobre threads em java;Estudos;Doing;2025-01-31;3
-3;Estudar matemática;Estudar funções, cálculo, integral etc;Estudos;To Do;2025-05-01;3
-1;Fugir daqui;Comprar banana, maçã, uva, pêra, abacaxi e mamão no supermercado;Compras;To Do;2025-01-27;1
