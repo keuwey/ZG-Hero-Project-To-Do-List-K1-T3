@@ -102,7 +102,7 @@ public class ToDoList {
         System.out.println("Tarefa cadastrada com sucesso!");
     }
 
-    public boolean removerTarefaPorId(int id) {
+    public static boolean removerTarefaPorId(int id) {
         Iterator<Tarefa> iterator = listaDeTarefas.iterator();
         while (iterator.hasNext()) {
             Tarefa tarefa = iterator.next();
@@ -186,13 +186,17 @@ public class ToDoList {
             System.out.println("6. Listar tarefas por categoria");
             System.out.println("7. Listar tarefas por prioridade (Todas as tarefas com a prioridade indicada)");
             System.out.println("8. Listar por prioridade (Ordem de prioridade)");
-            System.out.println("9. Sair");
+            System.out.println("9. Remover tarefa por ID");
+            System.out.println("10. Sair");
             System.out.print("Escolha uma opção: ");
             int opcao = scanner.nextInt();
             scanner.nextLine();
 
             switch (opcao) {
-                case 1 -> adicionarTarefa(scanner);
+                case 1 -> {
+                    adicionarTarefa(scanner);
+                    salvarTarefasEmArquivo(listaDeTarefas, caminhoArquivo);
+                }
                 case 2 -> listarTodasTarefas();
                 case 3 -> {
                     listarPorNome(listaDeTarefas, true);
@@ -223,13 +227,18 @@ public class ToDoList {
                     }
                 }
                 case 9 -> {
+                    System.out.print("Digite o ID da tarefa que deseja remover: ");
+                    removerTarefaPorId(scanner.nextInt());
+                    salvarTarefasEmArquivo(listaDeTarefas, caminhoArquivo);
+                }
+                case 10 -> {
                     continuar = false;
                     System.out.println("Saindo do programa...");
+                    salvarTarefasEmArquivo(listaDeTarefas, caminhoArquivo);
                 }
                 default -> System.out.println("Opção inválida! Tente novamente.");
             }
         }
         scanner.close();
-        salvarTarefasEmArquivo(listaDeTarefas, caminhoArquivo);
     }
 }
