@@ -102,7 +102,7 @@ public class ToDoList {
         System.out.println("Tarefa cadastrada com sucesso!");
     }
 
-    public static boolean removerTarefaPorId(int id) {
+    /*public static boolean removerTarefaPorId(int id) {
         Iterator<Tarefa> iterator = listaDeTarefas.iterator();
         while (iterator.hasNext()) {
             Tarefa tarefa = iterator.next();
@@ -114,6 +114,45 @@ public class ToDoList {
         }
         System.out.println("Tarefa com ID " + id + " não encontrada.");
         return false;
+    }*/
+
+    public class RemoveLineById {
+        public static void deleteLineById(String idToRemove) {
+            List<String> linesToKeep = new ArrayList<>();
+
+            try (BufferedReader reader = new BufferedReader(new FileReader(caminhoArquivo))) {
+                String currentLine;
+                boolean found = false;
+
+                // Ler e filtrar as linhas
+                while ((currentLine = reader.readLine()) != null) {
+                    if (currentLine.startsWith(idToRemove)) {
+                        found = true; // Linha encontrada, não adiciona à lista
+                        continue;
+                    }
+                    linesToKeep.add(currentLine); // Adiciona linha que será mantida
+                }
+
+                if (!found) {
+                    throw new FileNotFoundException("ID não encontrado.");
+                }
+            } catch (IOException e) {
+                System.err.println("Erro ao ler o arquivo: " + e.getMessage());
+                return;
+            }
+
+            // Sobrescrever o arquivo com as linhas filtradas
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(caminhoArquivo))) {
+                for (String line : linesToKeep) {
+                    writer.write(line);
+                    writer.newLine();
+                }
+                System.out.println("Tarefa removida com sucesso!");
+
+            } catch (IOException e) {
+                System.err.println("Erro ao sobrescrever o arquivo: " + e.getMessage());
+            }
+        }
     }
 
     public static void listarPorCategoria(Scanner scanner) {
@@ -152,7 +191,7 @@ public class ToDoList {
         listarTodasTarefas();
     }
 
-    public static List<Tarefa> listarPorPrioridadeTotal(List<Tarefa> listaDeTarefas){
+    public static List<Tarefa> listarPorPrioridadeTotal(List<Tarefa> listaDeTarefas) {
         listaDeTarefas.sort(Comparator.comparingInt(Tarefa::getNivelDePrioridade).reversed());
         return listaDeTarefas;
     }
@@ -228,7 +267,7 @@ public class ToDoList {
                 }
                 case 9 -> {
                     System.out.print("Digite o ID da tarefa que deseja remover: ");
-                    removerTarefaPorId(scanner.nextInt());
+                    RemoveLineById.deleteLineById(String.valueOf(scanner.nextInt()));
                     salvarTarefasEmArquivo(listaDeTarefas, caminhoArquivo);
                 }
                 case 10 -> {
