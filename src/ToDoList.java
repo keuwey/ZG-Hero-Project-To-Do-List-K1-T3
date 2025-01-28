@@ -116,42 +116,43 @@ public class ToDoList {
         return false;
     }*/
 
-    public class RemoveLineById {
-        public static void deleteLineById(String idToRemove) {
-            List<String> linesToKeep = new ArrayList<>();
 
-            try (BufferedReader reader = new BufferedReader(new FileReader(caminhoArquivo))) {
-                String currentLine;
-                boolean found = false;
+    public static void deleteLineById(String idToRemove) {
+        List<String> linesToKeep = new ArrayList<>();
 
-                // Ler e filtrar as linhas
-                while ((currentLine = reader.readLine()) != null) {
-                    if (currentLine.startsWith(idToRemove)) {
-                        found = true; // Linha encontrada, não adiciona à lista
-                        continue;
-                    }
-                    linesToKeep.add(currentLine); // Adiciona linha que será mantida
+        try (BufferedReader reader = new BufferedReader(new FileReader(caminhoArquivo))) {
+            String currentLine;
+            boolean found = false;
+
+            // Ler e filtrar as linhas
+            while ((currentLine = reader.readLine()) != null) {
+                if (currentLine.startsWith(idToRemove)) {
+                    found = true; // Linha encontrada, não adiciona à lista
+                    continue;
                 }
-
-                if (!found) {
-                    throw new FileNotFoundException("ID não encontrado.");
-                }
-            } catch (IOException e) {
-                System.err.println("Erro ao ler o arquivo: " + e.getMessage());
-                return;
+                linesToKeep.add(currentLine); // Adiciona linha que será mantida
             }
 
-            // Sobrescrever o arquivo com as linhas filtradas
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(caminhoArquivo))) {
-                for (String line : linesToKeep) {
-                    writer.write(line);
-                    writer.newLine();
-                }
-                System.out.println("Tarefa removida com sucesso!");
-
-            } catch (IOException e) {
-                System.err.println("Erro ao sobrescrever o arquivo: " + e.getMessage());
+            if (!found) {
+                throw new FileNotFoundException("ID não encontrado.");
             }
+        } catch (IOException e) {
+            System.err.println("Erro ao ler o arquivo: " + e.getMessage());
+            return;
+        }
+
+        // Sobrescrever o arquivo com as linhas filtradas
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(caminhoArquivo))) {
+            for (String line : linesToKeep) {
+                writer.write(line);
+                writer.newLine();
+                listaDeTarefas.add(linhaParaTarefa(line));
+                salvarTarefasEmArquivo(listaDeTarefas, caminhoArquivo);
+            }
+            System.out.println("Tarefa removida com sucesso!");
+
+        } catch (IOException e) {
+            System.err.println("Erro ao sobrescrever o arquivo: " + e.getMessage());
         }
     }
 
@@ -267,7 +268,7 @@ public class ToDoList {
                 }
                 case 9 -> {
                     System.out.print("Digite o ID da tarefa que deseja remover: ");
-                    RemoveLineById.deleteLineById(String.valueOf(scanner.nextInt()));
+                    deleteLineById(String.valueOf(scanner.nextInt()));
                     salvarTarefasEmArquivo(listaDeTarefas, caminhoArquivo);
                 }
                 case 10 -> {
