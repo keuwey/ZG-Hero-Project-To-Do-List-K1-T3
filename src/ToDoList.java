@@ -1,7 +1,6 @@
 import java.io.*;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ToDoList {
 
@@ -9,27 +8,14 @@ public class ToDoList {
     static List<Tarefa> listaDeTarefas = carregarTarefasDeArquivo(caminhoArquivo);
 
     public static void salvarTarefasEmArquivo(List<Tarefa> listaDeTarefas, String caminhoArquivo) throws IOException {
-        Set<String> tarefasExistentes = new HashSet<>();
-        File arquivo = new File(caminhoArquivo);
-        if (arquivo.exists()) {
-            try (BufferedReader reader = new BufferedReader(new FileReader(caminhoArquivo))) {
-                String linha;
-                while ((linha = reader.readLine()) != null) {
-                    tarefasExistentes.add(linha);
-                }
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-        }
-        List<String> novasTarefas = listaDeTarefas.stream()
-                .map(ToDoList::tarefaParaLinha)
-                .filter(linha -> !tarefasExistentes.contains(linha))
-                .collect(Collectors.toList());
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(caminhoArquivo, true))) {
-            for (String linha : novasTarefas) {
-                writer.write(linha);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(caminhoArquivo, false))) {
+            for (Tarefa tarefa : listaDeTarefas) {
+                writer.write(tarefaParaLinha(tarefa));
                 writer.newLine();
             }
+        } catch (IOException ex) {
+            System.err.println("Erro ao salvar as tarefas no arquivo: " + ex.getMessage());
+            throw ex;
         }
         System.out.println("Tarefas salvas com sucesso no arquivo!");
     }
@@ -102,42 +88,27 @@ public class ToDoList {
         System.out.println("Tarefa cadastrada com sucesso!");
     }
 
-    /*public static boolean removerTarefaPorId(int id) {
-        Iterator<Tarefa> iterator = listaDeTarefas.iterator();
-        while (iterator.hasNext()) {
-            Tarefa tarefa = iterator.next();
-            if (tarefa.getID() == id) {
-                iterator.remove();
-                System.out.println("Tarefa com ID " + id + " foi removida.");
-                return true;
-            }
-        }
-        System.out.println("Tarefa com ID " + id + " não encontrada.");
-        return false;
-    }*/
-
-
     public static void deleteLineById(String idToRemove) {
         List<String> linesToKeep = new ArrayList<>();
+        boolean found = false;
 
         try (BufferedReader reader = new BufferedReader(new FileReader(caminhoArquivo))) {
             String currentLine;
-            boolean found = false;
 
             // Ler e filtrar as linhas
             while ((currentLine = reader.readLine()) != null) {
-                if (currentLine.startsWith(idToRemove)) {
+                if (currentLine.startsWith(idToRemove + ";")) {
                     found = true; // Linha encontrada, não adiciona à lista
                     continue;
                 }
                 linesToKeep.add(currentLine); // Adiciona linha que será mantida
             }
-
-            if (!found) {
-                throw new FileNotFoundException("ID não encontrado.");
-            }
         } catch (IOException e) {
             System.err.println("Erro ao ler o arquivo: " + e.getMessage());
+            return;
+        }
+        if (!found) {
+            System.out.println("ID " + idToRemove + " não encontrado.");
             return;
         }
 
@@ -146,14 +117,12 @@ public class ToDoList {
             for (String line : linesToKeep) {
                 writer.write(line);
                 writer.newLine();
-                listaDeTarefas.add(linhaParaTarefa(line));
-                salvarTarefasEmArquivo(listaDeTarefas, caminhoArquivo);
             }
-            System.out.println("Tarefa removida com sucesso!");
-
         } catch (IOException e) {
             System.err.println("Erro ao sobrescrever o arquivo: " + e.getMessage());
         }
+        listaDeTarefas = carregarTarefasDeArquivo(caminhoArquivo);
+        System.out.println("Tarefa com ID " + idToRemove + "removida com sucesso!");
     }
 
     public static void listarPorCategoria(Scanner scanner) {
