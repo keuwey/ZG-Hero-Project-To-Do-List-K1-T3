@@ -4,13 +4,13 @@ import java.util.*;
 
 public class ToDoList {
 
-    static String caminhoArquivo = "tarefas.txt";
-    static List<Tarefa> listaDeTarefas = carregarTarefasDeArquivo(caminhoArquivo);
+    static String filePath = "tarefas.txt";
+    static List<Task> taskList = loadTasksFromFile(filePath);
 
-    public static void salvarTarefasEmArquivo(List<Tarefa> listaDeTarefas, String caminhoArquivo) throws IOException {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(caminhoArquivo, false))) {
-            for (Tarefa tarefa : listaDeTarefas) {
-                writer.write(tarefaParaLinha(tarefa));
+    public static void saveTasksInFile(List<Task> taskList, String filePath) throws IOException {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, false))) {
+            for (Task task : taskList) {
+                writer.write(taskToLine(task));
                 writer.newLine();
             }
         } catch (IOException ex) {
@@ -20,79 +20,79 @@ public class ToDoList {
         System.out.println("Tarefas salvas com sucesso no arquivo!");
     }
 
-    private static String tarefaParaLinha(Tarefa tarefa) {
+    private static String taskToLine(Task task) {
         return String.join(";",
-                String.valueOf(tarefa.getID()),
-                tarefa.getNome(),
-                tarefa.getDescricao(),
-                tarefa.getCategoria(),
-                tarefa.getStatus(),
-                tarefa.getDataDeTermino().toString(),
-                String.valueOf(tarefa.getNivelDePrioridade())
+                String.valueOf(task.getID()),
+                task.getName(),
+                task.getDescription(),
+                task.getCategory(),
+                task.getStatus(),
+                task.getFinnishDate().toString(),
+                String.valueOf(task.getPriorityLevel())
         );
     }
 
-    public static List<Tarefa> carregarTarefasDeArquivo(String caminhoArquivo) {
-        List<Tarefa> listaDeTarefas = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(caminhoArquivo))) {
-            String linha;
-            while ((linha = reader.readLine()) != null) {
-                Tarefa tarefa = linhaParaTarefa(linha);
-                listaDeTarefas.add(tarefa);
+    public static List<Task> loadTasksFromFile(String filePath) {
+        List<Task> taskList = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                Task task = lineToTask(line);
+                taskList.add(task);
             }
             System.out.println("Tarefas carregadas com sucesso!");
         } catch (IOException e) {
             System.err.println("Erro ao carregar as tarefas: " + e.getMessage());
         }
-        return listaDeTarefas;
+        return taskList;
     }
 
-    private static Tarefa linhaParaTarefa(String linha) {
-        String[] campos = linha.split(";");
-        return new Tarefa(
-                campos[1], // Nome
-                campos[2], // Descrição
-                campos[3], // Categoria
-                campos[4], // Status
-                LocalDate.parse(campos[5]), // Data de término
-                Integer.parseInt(campos[6]), // Prioridade
-                Integer.parseInt(campos[0]) // ID
+    private static Task lineToTask(String line) {
+        String[] fields = line.split(";");
+        return new Task(
+                fields[1], // Name
+                fields[2], // Description
+                fields[3], // Category
+                fields[4], // Status
+                LocalDate.parse(fields[5]), // Finish date
+                Integer.parseInt(fields[6]), // Priority
+                Integer.parseInt(fields[0]) // ID
         );
     }
 
-    public static void adicionarTarefa(Scanner scanner) {
+    public static void addTask(Scanner scanner) {
         System.out.print("Digite o nome da tarefa: ");
-        String nome = scanner.nextLine();
+        String name = scanner.nextLine();
 
         System.out.print("Digite a descrição da tarefa: ");
-        String descricao = scanner.nextLine();
+        String description = scanner.nextLine();
 
         System.out.print("Digite a categoria da tarefa: ");
-        String categoria = scanner.nextLine();
+        String category = scanner.nextLine();
 
         System.out.print("Digite o status da tarefa (To Do, Doing, Done): ");
         String status = scanner.nextLine();
 
         System.out.print("Digite a data de término (formato: AAAA-MM-DD): ");
-        LocalDate dataDeTermino = LocalDate.parse(scanner.nextLine());
+        LocalDate finnishDate = LocalDate.parse(scanner.nextLine());
 
         System.out.print("Digite o nível de prioridade (1 a 5): ");
-        int nivelDePrioridade = scanner.nextInt();
+        int priorityLevel = scanner.nextInt();
 
         System.out.print("Digite o ID da tarefa: ");
         int id = scanner.nextInt();
         scanner.nextLine();
 
-        Tarefa novaTarefa = new Tarefa(nome, descricao, categoria, status, dataDeTermino, nivelDePrioridade, id);
-        listaDeTarefas.add(novaTarefa);
-        System.out.println("Tarefa cadastrada com sucesso!");
+        Task newTask = new Task(name, description, category, status, finnishDate, priorityLevel, id);
+        taskList.add(newTask);
+        System.out.println("Task cadastrada com sucesso!");
     }
 
     public static void deleteLineById(String idToRemove) {
         List<String> linesToKeep = new ArrayList<>();
         boolean found = false;
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(caminhoArquivo))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String currentLine;
 
             // Ler e filtrar as linhas
@@ -113,7 +113,7 @@ public class ToDoList {
         }
 
         // Sobrescrever o arquivo com as linhas filtradas
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(caminhoArquivo))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
             for (String line : linesToKeep) {
                 writer.write(line);
                 writer.newLine();
@@ -121,71 +121,65 @@ public class ToDoList {
         } catch (IOException e) {
             System.err.println("Erro ao sobrescrever o arquivo: " + e.getMessage());
         }
-        listaDeTarefas = carregarTarefasDeArquivo(caminhoArquivo);
-        System.out.println("Tarefa com ID " + idToRemove + "removida com sucesso!");
+        taskList = loadTasksFromFile(filePath);
+        System.out.println("Task com ID " + idToRemove + "removida com sucesso!");
     }
 
-    public static void listarPorCategoria(Scanner scanner) {
+    public static void listByCategory(Scanner scanner) {
         System.out.print("Digite a categoria desejada: ");
-        String categoria = scanner.nextLine();
-        System.out.println("Tarefas na categoria '" + categoria + "':");
-        listaDeTarefas.stream()
-                .filter(tarefa -> tarefa.getCategoria().equalsIgnoreCase(categoria))
+        String category = scanner.nextLine();
+        System.out.println("Tarefas na categoria '" + category + "':");
+        taskList.stream()
+                .filter(task -> task.getCategory().equalsIgnoreCase(category))
                 .forEach(System.out::println);
     }
 
-    public static void listarPorStatus(String status) {
+    public static void listByStatus(String status) {
         System.out.println("Tarefas com status '" + status + "':");
-        listaDeTarefas.stream()
-                .filter(tarefa -> tarefa.getStatus().equalsIgnoreCase(status))
+        taskList.stream()
+                .filter(task -> task.getStatus().equalsIgnoreCase(status))
                 .forEach(System.out::println);
     }
 
     // Lista todas as tarefas com que tenha a prioridade passada no parâmetro
     // Prioridade 1 - 5 (1 == baixa prioridade. 5 == alta prioridade)
-    public static void listarPorPrioridade(int prioridade) {
-        System.out.println("Tarefas com prioridade " + prioridade + ":");
-        listaDeTarefas.stream()
-                .filter(tarefa -> tarefa.getNivelDePrioridade() == prioridade)
+    public static void listByPriority(int priority) {
+        System.out.println("Tarefas com prioridade " + priority + ":");
+        taskList.stream()
+                .filter(task -> task.getPriorityLevel() == priority)
                 .forEach(System.out::println);
     }
 
-    public static void listarTodasTarefas() {
+    public static void listAllTasks() {
         System.out.println("Tarefas na lista:");
-        listaDeTarefas.forEach(System.out::println);
+        taskList.forEach(System.out::println);
     }
 
-    public static void listarPorPrioridadeDecrescente() {
-        Collections.sort(listaDeTarefas, Comparator.comparingInt(Tarefa::getNivelDePrioridade).reversed());
-        System.out.println("Tarefas por prioridade (decrescente):");
-        listarTodasTarefas();
+    public static List<Task> listByTotalPriority(List<Task> taskList) {
+        taskList.sort(Comparator.comparingInt(Task::getPriorityLevel).reversed());
+        return taskList;
     }
 
-    public static List<Tarefa> listarPorPrioridadeTotal(List<Tarefa> listaDeTarefas) {
-        listaDeTarefas.sort(Comparator.comparingInt(Tarefa::getNivelDePrioridade).reversed());
-        return listaDeTarefas;
-    }
-
-    public static void listarPorData(LocalDate data) {
-        System.out.println("Tarefas com data de término " + data + ":");
-        listaDeTarefas.stream()
-                .filter(tarefa -> tarefa.getDataDeTermino().isEqual(data))
+    public static void listByDate(LocalDate date) {
+        System.out.println("Tarefas com data de término " + date + ":");
+        taskList.stream()
+                .filter(task -> task.getFinnishDate().isEqual(date))
                 .forEach(System.out::println);
     }
 
-    public static List<Tarefa> listarPorNome(List<Tarefa> listaDeTarefas, boolean crescente) {
-        listaDeTarefas.sort(Comparator.comparing(Tarefa::getNome));
-        if (!crescente) {
-            listaDeTarefas.sort(Comparator.comparing(Tarefa::getNome).reversed());
+    public static List<Task> listByName(List<Task> taskList, boolean ascending) {
+        taskList.sort(Comparator.comparing(Task::getName));
+        if (!ascending) {
+            taskList.sort(Comparator.comparing(Task::getName).reversed());
         }
-        return listaDeTarefas;
+        return taskList;
     }
 
     public static void main(String[] args) throws IOException {
         Scanner scanner = new Scanner(System.in);
-        boolean continuar = true;
+        boolean continue_ = true;
 
-        while (continuar) {
+        while (continue_) {
             System.out.println("\n--- Menu ToDoList ---\n");
             System.out.println("1. Cadastrar tarefa");
             System.out.println("2. Listar todas as tarefas");
@@ -198,52 +192,52 @@ public class ToDoList {
             System.out.println("9. Remover tarefa por ID");
             System.out.println("10. Sair");
             System.out.print("Escolha uma opção: ");
-            int opcao = scanner.nextInt();
+            int option = scanner.nextInt();
             scanner.nextLine();
 
-            switch (opcao) {
+            switch (option) {
                 case 1 -> {
-                    adicionarTarefa(scanner);
-                    salvarTarefasEmArquivo(listaDeTarefas, caminhoArquivo);
+                    addTask(scanner);
+                    saveTasksInFile(taskList, filePath);
                 }
-                case 2 -> listarTodasTarefas();
+                case 2 -> listAllTasks();
                 case 3 -> {
-                    listarPorNome(listaDeTarefas, true);
-                    for (Tarefa tarefa : listaDeTarefas) {
-                        System.out.println(tarefa);
+                    listByName(taskList, true);
+                    for (Task task : taskList) {
+                        System.out.println(task);
                     }
                 }
                 case 4 -> {
-                    listarPorNome(listaDeTarefas, false);
-                    for (Tarefa tarefa : listaDeTarefas) {
-                        System.out.println(tarefa);
+                    listByName(taskList, false);
+                    for (Task task : taskList) {
+                        System.out.println(task);
                     }
                 }
                 case 5 -> {
                     System.out.print("Digite o status que deseja buscar (To Do, Doing, Done): ");
-                    listarPorStatus(scanner.nextLine());
+                    listByStatus(scanner.nextLine());
                 }
-                case 6 -> listarPorCategoria(scanner);
+                case 6 -> listByCategory(scanner);
                 case 7 -> {
                     System.out.print("Digite o nível de prioridade (1 a 5): ");
-                    listarPorPrioridade(scanner.nextInt());
+                    listByPriority(scanner.nextInt());
                 }
                 case 8 -> {
                     System.out.println("Tarefas em ordem de prioridade: ");
-                    listarPorPrioridadeTotal(listaDeTarefas);
-                    for (Tarefa tarefa : listaDeTarefas) {
-                        System.out.println(tarefa);
+                    listByTotalPriority(taskList);
+                    for (Task task : taskList) {
+                        System.out.println(task);
                     }
                 }
                 case 9 -> {
                     System.out.print("Digite o ID da tarefa que deseja remover: ");
                     deleteLineById(String.valueOf(scanner.nextInt()));
-                    salvarTarefasEmArquivo(listaDeTarefas, caminhoArquivo);
+                    saveTasksInFile(taskList, filePath);
                 }
                 case 10 -> {
-                    continuar = false;
+                    continue_ = false;
                     System.out.println("Saindo do programa...");
-                    salvarTarefasEmArquivo(listaDeTarefas, caminhoArquivo);
+                    saveTasksInFile(taskList, filePath);
                 }
                 default -> System.out.println("Opção inválida! Tente novamente.");
             }
