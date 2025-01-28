@@ -4,7 +4,7 @@ import java.util.*;
 
 public class ToDoList {
 
-    static String filePath = "tarefas.txt";
+    static String filePath = "tasks.txt";
     static List<Task> taskList = loadTasksFromFile(filePath);
 
     public static void saveTasksInFile(List<Task> taskList, String filePath) throws IOException {
@@ -95,13 +95,13 @@ public class ToDoList {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String currentLine;
 
-            // Ler e filtrar as linhas
+            // Read and filter the lines
             while ((currentLine = reader.readLine()) != null) {
                 if (currentLine.startsWith(idToRemove + ";")) {
-                    found = true; // Linha encontrada, não adiciona à lista
+                    found = true; // Line found, does not add to list
                     continue;
                 }
-                linesToKeep.add(currentLine); // Adiciona linha que será mantida
+                linesToKeep.add(currentLine); // Add line that will be kept
             }
         } catch (IOException e) {
             System.err.println("Erro ao ler o arquivo: " + e.getMessage());
@@ -112,7 +112,7 @@ public class ToDoList {
             return;
         }
 
-        // Sobrescrever o arquivo com as linhas filtradas
+        // Overwrite the file with the filtered lines
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
             for (String line : linesToKeep) {
                 writer.write(line);
@@ -123,6 +123,95 @@ public class ToDoList {
         }
         taskList = loadTasksFromFile(filePath);
         System.out.println("Task com ID " + idToRemove + "removida com sucesso!");
+    }
+
+    public static void updateTask(Scanner scanner) {
+        System.out.print("Digite o ID da tarefa que deseja atualizar: ");
+        int id = scanner.nextInt();
+        scanner.nextLine();
+
+        Task taskToUpdate = null;
+        for (Task task : taskList) {
+            if (task.getID() == id) {
+                taskToUpdate = task;
+                break;
+            }
+        }
+
+        if (taskToUpdate == null) {
+            System.out.println("Tarefa com ID " + id + " não encontrada.");
+            return;
+        }
+
+        boolean keepUpdating = true;
+        do {
+            System.out.println("\nSelecione o campo para atualizar:");
+            System.out.println("1. Nome");
+            System.out.println("2. Descrição");
+            System.out.println("3. Categoria");
+            System.out.println("4. Status");
+            System.out.println("5. Data de término");
+            System.out.println("6. Nível de prioridade");
+            System.out.print("Opção: ");
+
+            int field;
+            try {
+                field = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada inválida! Digite um número entre 1-6.");
+                continue;
+            }
+
+            switch (field) {
+                case 1:
+                    System.out.print("Novo nome: ");
+                    taskToUpdate.setName(scanner.nextLine());
+                    break;
+                case 2:
+                    System.out.print("Nova descrição: ");
+                    taskToUpdate.setDescription(scanner.nextLine());
+                    break;
+                case 3:
+                    System.out.print("Nova categoria: ");
+                    taskToUpdate.setCategory(scanner.nextLine());
+                    break;
+                case 4:
+                    System.out.print("Novo status (To Do, Doing, Done): ");
+                    taskToUpdate.setStatus(scanner.nextLine());
+                    break;
+                case 5:
+                    System.out.print("Nova data (AAAA-MM-DD): ");
+                    try {
+                        taskToUpdate.setFinnishDate(LocalDate.parse(scanner.nextLine()));
+                    } catch (Exception e) {
+                        System.out.println("Formato de data inválido!");
+                    }
+                    break;
+                case 6:
+                    System.out.print("Nova prioridade (1-5): ");
+                    try {
+                        taskToUpdate.setPriorityLevel(Integer.parseInt(scanner.nextLine()));
+                    } catch (Exception e) {
+                        System.out.println("Prioridade deve ser um número!");
+                    }
+                    break;
+                default:
+                    System.out.println("Opção inválida!");
+                    break;
+            }
+
+            System.out.print("Deseja alterar outro campo? (S/N): ");
+            String answer = scanner.nextLine().trim().toUpperCase();
+            keepUpdating = answer.equals("S");
+
+        } while (keepUpdating);
+
+        try {
+            saveTasksInFile(taskList, filePath);
+            System.out.println("Tarefa atualizada com sucesso!");
+        } catch (IOException e) {
+            System.err.println("Erro ao salvar alterações: " + e.getMessage());
+        }
     }
 
     public static void listByCategory(Scanner scanner) {
@@ -141,8 +230,8 @@ public class ToDoList {
                 .forEach(System.out::println);
     }
 
-    // Lista todas as tarefas com que tenha a prioridade passada no parâmetro
-    // Prioridade 1 - 5 (1 == baixa prioridade. 5 == alta prioridade)
+    // Lists all tasks that have the priority passed in the parameter
+    // Priority 1 - 5 (1 == low priority. 5 == high priority)
     public static void listByPriority(int priority) {
         System.out.println("Tarefas com prioridade " + priority + ":");
         taskList.stream()
@@ -191,7 +280,8 @@ public class ToDoList {
             System.out.println("8. Listar tarefas por prioridade (Todas as tarefas com a prioridade indicada)");
             System.out.println("9. Listar por prioridade (Ordem de prioridade)");
             System.out.println("10. Remover tarefa por ID");
-            System.out.println("11. Sair");
+            System.out.println("11. Atualizar tarefa por ID");
+            System.out.println("12. Sair");
             System.out.print("Escolha uma opção: ");
             int option = scanner.nextInt();
             scanner.nextLine();
@@ -245,7 +335,8 @@ public class ToDoList {
                     deleteLineById(String.valueOf(scanner.nextInt()));
                     saveTasksInFile(taskList, filePath);
                 }
-                case 11 -> {
+                case 11 -> updateTask(scanner);
+                case 12 -> {
                     continue_ = false;
                     System.out.println("Saindo do programa...");
                     saveTasksInFile(taskList, filePath);
