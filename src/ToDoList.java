@@ -187,10 +187,11 @@ public class ToDoList {
             System.out.println("4. Listar tarefas por nome (decrescente)");
             System.out.println("5. Listar tarefas por status");
             System.out.println("6. Listar tarefas por categoria");
-            System.out.println("7. Listar tarefas por prioridade (Todas as tarefas com a prioridade indicada)");
-            System.out.println("8. Listar por prioridade (Ordem de prioridade)");
-            System.out.println("9. Remover tarefa por ID");
-            System.out.println("10. Sair");
+            System.out.println("7. Listar tarefas por data de conclusão");
+            System.out.println("8. Listar tarefas por prioridade (Todas as tarefas com a prioridade indicada)");
+            System.out.println("9. Listar por prioridade (Ordem de prioridade)");
+            System.out.println("10. Remover tarefa por ID");
+            System.out.println("11. Sair");
             System.out.print("Escolha uma opção: ");
             int option = scanner.nextInt();
             scanner.nextLine();
@@ -219,22 +220,32 @@ public class ToDoList {
                 }
                 case 6 -> listByCategory(scanner);
                 case 7 -> {
+                    System.out.println("Digite a data na qual deseja buscar por tarefas (AAAA/MM/DD) ");
+                    System.out.print("Ano: ");
+                    int year = scanner.nextInt();
+                    System.out.print("Mês: ");
+                    int month = scanner.nextInt();
+                    System.out.print("Dia: ");
+                    int date = scanner.nextInt();
+                    listByDate(LocalDate.of(year, month, date));
+                }
+                case 8 -> {
                     System.out.print("Digite o nível de prioridade (1 a 5): ");
                     listByPriority(scanner.nextInt());
                 }
-                case 8 -> {
+                case 9 -> {
                     System.out.println("Tarefas em ordem de prioridade: ");
                     listByTotalPriority(taskList);
                     for (Task task : taskList) {
                         System.out.println(task);
                     }
                 }
-                case 9 -> {
+                case 10 -> {
                     System.out.print("Digite o ID da tarefa que deseja remover: ");
                     deleteLineById(String.valueOf(scanner.nextInt()));
                     saveTasksInFile(taskList, filePath);
                 }
-                case 10 -> {
+                case 11 -> {
                     continue_ = false;
                     System.out.println("Saindo do programa...");
                     saveTasksInFile(taskList, filePath);
