@@ -1,5 +1,6 @@
 import java.io.*;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class ToDoList {
@@ -85,7 +86,7 @@ public class ToDoList {
 
         Task newTask = new Task(name, description, category, status, finnishDate, priorityLevel, id);
         taskList.add(newTask);
-        System.out.println("Task cadastrada com sucesso!");
+        System.out.println("Tarefa cadastrada com sucesso!");
     }
 
     public static void deleteLineById(String idToRemove) {
@@ -122,7 +123,7 @@ public class ToDoList {
             System.err.println("Erro ao sobrescrever o arquivo: " + e.getMessage());
         }
         taskList = loadTasksFromFile(filePath);
-        System.out.println("Task com ID " + idToRemove + "removida com sucesso!");
+        System.out.println("Tarefa com ID " + idToRemove + " removida com sucesso!");
     }
 
     public static void updateTask(Scanner scanner) {
@@ -250,7 +251,8 @@ public class ToDoList {
     }
 
     public static void listByDate(LocalDate date) {
-        System.out.println("Tarefas com data de término " + date + ":");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        System.out.println("Tarefas com data de término " + date.format(formatter) + ":");
         taskList.stream()
                 .filter(task -> task.getFinnishDate().isEqual(date))
                 .forEach(System.out::println);
@@ -282,8 +284,9 @@ public class ToDoList {
             System.out.println("10. Remover tarefa por ID");
             System.out.println("11. Atualizar tarefa por ID");
             System.out.println("12. Sair");
-            System.out.print("Escolha uma opção: ");
+            System.out.print("\nEscolha uma opção: ");
             int option = scanner.nextInt();
+            System.out.println();
             scanner.nextLine();
 
             switch (option) {
@@ -310,13 +313,13 @@ public class ToDoList {
                 }
                 case 6 -> listByCategory(scanner);
                 case 7 -> {
-                    System.out.println("Digite a data na qual deseja buscar por tarefas (AAAA/MM/DD) ");
-                    System.out.print("Ano: ");
-                    int year = scanner.nextInt();
-                    System.out.print("Mês: ");
-                    int month = scanner.nextInt();
+                    System.out.println("Digite a data na qual deseja buscar por tarefas (DD/MM/AAAA) ");
                     System.out.print("Dia: ");
                     int date = scanner.nextInt();
+                    System.out.print("Mês: ");
+                    int month = scanner.nextInt();
+                    System.out.print("Ano: ");
+                    int year = scanner.nextInt();
                     listByDate(LocalDate.of(year, month, date));
                 }
                 case 8 -> {
