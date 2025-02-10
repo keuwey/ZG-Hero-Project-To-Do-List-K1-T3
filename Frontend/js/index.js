@@ -1,7 +1,6 @@
 let tasks = []
 let currentTaskId = null
 
-// Form submission handler
 document.getElementById("taskForm").addEventListener("submit", e => {
     e.preventDefault()
 
@@ -13,11 +12,9 @@ document.getElementById("taskForm").addEventListener("submit", e => {
     }
 
     if (currentTaskId) {
-        // Update existing task
         const index = tasks.findIndex(t => t.id === currentTaskId)
         tasks[index] = task
     } else {
-        // Add new task
         tasks.push(task)
     }
 
@@ -26,7 +23,6 @@ document.getElementById("taskForm").addEventListener("submit", e => {
     e.target.reset()
 })
 
-// Filter handler
 document.getElementById("filterStatus").addEventListener("change", renderTasks)
 
 function editTask(id) {
@@ -75,5 +71,4 @@ function renderTasks() {
         .join("")
 }
 
-// Initial render
 renderTasks()
