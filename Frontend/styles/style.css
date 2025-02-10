@@ -1,0 +1,145 @@
+:root {
+    --bg-color: #1a1a1a;
+    --card-bg: #2d2d2d;
+    --text-color: #e6e6e6;
+    --accent: #4a90e2;
+    --hover-accent: #357abd;
+    --danger: #e74c3c;
+    --success: #2ecc71;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: "Segoe UI", sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.task-form {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    background: #3d3d3d;
+    border: 1px solid #4d4d4d;
+    color: var(--text-color);
+    border-radius: 4px;
+    margin-top: 5px;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.btn-primary {
+    background: var(--accent);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--hover-accent);
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: white;
+}
+
+.tasks-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.task-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--card-bg);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.task-table th, .task-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #3d3d3d;
+}
+
+.task-table th {
+    background: #333;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 0.8em;
+}
+
+.status-TODO {
+    background: #4d4d4d;
+}
+
+.status-DOING {
+    background: var(--accent);
+}
+
+.status-DONE {
+    background: var(--success);
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+}
+
+@media (max-width: 768px) {
+    .task-table {
+        display: block;
+        overflow-x: auto;
+    }
+
+    .task-form {
+        padding: 15px;
+    }
+
+    .form-group {
+        margin-bottom: 10px;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+    }
+
+    .actions {
+        flex-direction: column;
+    }
+}

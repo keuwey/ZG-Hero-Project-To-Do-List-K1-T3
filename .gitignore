@@ -13,7 +13,7 @@ out/
 *.zip
 *.tar.gz
 *.rar
-
+.prettierrc
 
 ### Eclipse ###
 .apt_generated

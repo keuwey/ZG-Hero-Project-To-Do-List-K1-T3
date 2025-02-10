@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dark Task Manager</title>
+    <link rel="stylesheet" href="./styles/style.css">
+  </head>
+  <body>
+    <div class="container">
+      <form class="task-form" id="taskForm">
+        <input type="hidden" id="taskId" />
+        <div class="form-group">
+          <label for="title">Title</label>
+          <input type="text" id="title" required />
+        </div>
+        <div class="form-group">
+          <label for="description">Description</label>
+          <textarea id="description" rows="3"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="status">Status</label>
+          <select id="status" required>
+            <option value="TODO">TODO</option>
+            <option value="DOING">DOING</option>
+            <option value="DONE">DONE</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-primary"> <i class="fas fa-paper-plane"></i> Save Task </button>
+      </form>
+
+      <h1>Tasks</h1>
+      <div class="tasks-header">
+        <select id="filterStatus">
+          <option value="ALL">All</option>
+          <option value="TODO">TODO</option>
+          <option value="DOING">DOING</option>
+          <option value="DONE">DONE</option>
+        </select>
+      </div>
+
+      <table class="task-table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="taskList">
+          <!-- Tasks will be inserted here -->
+        </tbody>
+      </table>
+    </div>
+
+    <script src="./js/index.js"></script>
+    <script src="https://kit.fontawesome.com/a265da8202.js" crossorigin="anonymous"></script>
+  </body>
+</html>
