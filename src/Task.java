@@ -107,10 +107,10 @@ public class Task {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         return
                 "Nome = '" + Name + '\'' +
-                        ", Descricao = '" + Description + '\'' +
+                        ", Descrição = '" + Description + '\'' +
                         ", Categoria = '" + Category + '\'' +
                         ", Status = '" + Status + '\'' +
-                        ", DataDeTermino = " + (FinnishDate != null ? FinnishDate.format(formatter) : "Data não definida")
-                        + ", NivelDePrioridade = " + PriorityLevel;
+                        ", Data de término = " + (FinnishDate != null ? FinnishDate.format(formatter) : "Data não definida")
+                        + ", Nível de prioridade = " + PriorityLevel;
     }
 }

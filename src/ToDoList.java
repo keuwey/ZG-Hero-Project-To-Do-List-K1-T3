@@ -245,9 +245,8 @@ public class ToDoList {
         taskList.forEach(System.out::println);
     }
 
-    public static List<Task> listByTotalPriority(List<Task> taskList) {
+    public static void listByTotalPriority(List<Task> taskList) {
         taskList.sort(Comparator.comparingInt(Task::getPriorityLevel).reversed());
-        return taskList;
     }
 
     public static void listByDate(LocalDate date) {
@@ -258,12 +257,11 @@ public class ToDoList {
                 .forEach(System.out::println);
     }
 
-    public static List<Task> listByName(List<Task> taskList, boolean ascending) {
+    public static void listByName(List<Task> taskList, boolean ascending) {
         taskList.sort(Comparator.comparing(Task::getName));
         if (!ascending) {
             taskList.sort(Comparator.comparing(Task::getName).reversed());
         }
-        return taskList;
     }
 
     public static void main(String[] args) throws IOException {
