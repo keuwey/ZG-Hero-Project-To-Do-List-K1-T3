@@ -1,3 +1,0 @@
-1;Estudar para a prova;Estudar para a prova e fazer algumas questões;Estudos;to do;2025-01-26;4
-2;Comprar mantimentos;Comprar itens essenciais como arroz, feijão, carne etc;Compras;to do;2025-01-29;4
-3;Ligar para o cliente;Ligar para o cliente e falar sobre o prazo de entrega do produto;Trabalho;to do;2025-01-27;3
